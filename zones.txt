@@ -1,29 +1,16 @@
 # ============================================
-# GOLD Scenario Helper - 配信データファイル
-# ============================================
-# このファイルをGitHubで更新すると、メンバー全員のMT5に自動反映されます
-# 行頭が # の行はコメント(無視されます)
-#
-# 書式:
-#   TITLE|<タイトル>
-#   UPDATED|<更新時刻>
-#   PRICE|<現在価格の目安>
-#   NOTE|<一言メモ>
-#   ZONE|<ID>|<ラベル>|<下値>|<上値>|<色>
-#   LINE|<ID>|<ラベル>|<価格>|<色>
-#
-# 色の例: Red / DodgerBlue / Orange / Magenta / MediumSeaGreen / Gold / Yellow
+# GOLD Scenario Helper - 配信データ
+# Generated: 2026-05-28 10:39
 # ============================================
 
-TITLE|週明け下窓スタート・4,650〜4,670で支えられるかを見る局面
-UPDATED|2026-05-28 07:00
-PRICE|4683
-NOTE|月曜朝の下窓に飛び乗らず、サポートの反応を確認してから判断
+TITLE|木曜日シナリオ
+UPDATED|2026-05-28 10:39
+PRICE|4422
+NOTE|指標に注意
 
 ZONE|main_buy|本命押し目候補|4650|4670|DodgerBlue
 ZONE|short_resist|短期戻り売り候補|4695|4705|Orange
 ZONE|main_sell|上値重要ゾーン|4728|4736|Red
-ZONE|deep_support|深押しサポート|4600|4610|MediumSeaGreen
 
 LINE|deny_buy|買い目線否定|4650|Magenta
 LINE|deny_sell|売り目線否定|4736|Magenta
