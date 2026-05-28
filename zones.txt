@@ -1,22 +1,21 @@
 # ============================================
 # GOLD Scenario Helper - 配信データ
-# Generated: 2026-05-28 17:32 (auto-extracted from scenario)
+# Generated: 2026-05-28 17:37 (auto-extracted from scenario)
 # ============================================
 
-TITLE|4,520〜4,530の再攻防・上抜けか下抜け後の反応を確認する日
-UPDATED|2026-05-28 17:32
-PRICE|4520
-NOTE|今、一番迷いやすいのは、
+TITLE|4,500完全割れ後・4,390付近を回復できるか、さらに下へ走るかを見る日
+UPDATED|2026-05-28 17:37
+PRICE|4380
+NOTE|昨日のシナリオでは、4,500割れから下方向がしっかり進みました
 
-ZONE|az1|短期戻り売り候補|4520|4530|Orange
-ZONE|az2|短期戻り売り候補|4580|4590|Orange
-ZONE|az3|短期戻り売り候補|4550|4560|Orange
-ZONE|az4|戻り売り候補|4467|4480|Red
-ZONE|az5|戻り売り候補|4430|4450|Red
-ZONE|az6|本命戻り売り候補|4600|4610|Red
-ZONE|az7|戻り売り候補|4488|4500|Red
-ZONE|az8|短期戻り売り候補|4530|4590|Orange
-ZONE|az9|戻り売り候補|4510|4520|Red
+ZONE|az1|短期戻り売り候補|4430|4450|Orange
+ZONE|az2|短期戻り売り候補|4390|4400|Orange
+ZONE|az3|戻り売り候補|4467|4480|Red
+ZONE|az4|戻り売り候補|4520|4530|Red
+ZONE|az5|戻り売り候補|4488|4491|Red
+ZONE|az6|短期戻り売り候補|4293|4300|Orange
+ZONE|az7|戻り売り候補|4580|4590|Red
 
-LINE|al1|売り目線否定|4530|Magenta
-LINE|al2|売り目線否定|4520|Magenta
+LINE|al1|売り目線否定|4500|Magenta
+LINE|al2|買い目線否定|4380|Magenta
+LINE|al3|否定ライン|4430|Magenta
