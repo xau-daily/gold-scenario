@@ -1,20 +1,15 @@
 # ============================================
 # GOLD Scenario Helper - 配信データ
-# Generated: 2026-05-28 17:37 (auto-extracted from scenario)
+# Generated: 2026-05-28 17:40 (auto-extracted from scenario)
 # ============================================
 
 TITLE|4,500完全割れ後・4,390付近を回復できるか、さらに下へ走るかを見る日
-UPDATED|2026-05-28 17:37
+UPDATED|2026-05-28 17:40
 PRICE|4380
 NOTE|昨日のシナリオでは、4,500割れから下方向がしっかり進みました
 
-ZONE|az1|短期戻り売り候補|4430|4450|Orange
-ZONE|az2|短期戻り売り候補|4390|4400|Orange
 ZONE|az3|戻り売り候補|4467|4480|Red
 ZONE|az4|戻り売り候補|4520|4530|Red
-ZONE|az5|戻り売り候補|4488|4491|Red
-ZONE|az6|短期戻り売り候補|4293|4300|Orange
-ZONE|az7|戻り売り候補|4580|4590|Red
 
 LINE|al1|売り目線否定|4500|Magenta
 LINE|al2|買い目線否定|4380|Magenta
