@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>GOLD Scenario Helper - 配信ツール</title>
+<style>
+  body {
+    font-family: "Yu Gothic UI", "Hiragino Sans", sans-serif;
+    background: #1a1a1a;
+    color: #e8e8e8;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    line-height: 1.6;
+  }
+  h1 { color: #ffd700; border-bottom: 2px solid #444; padding-bottom: 10px; }
+  h2 { color: #87ceeb; margin-top: 30px; }
+  label { display: inline-block; min-width: 90px; color: #aaa; }
+  input[type=text], input[type=number], textarea {
+    background: #2a2a2a;
+    color: #e8e8e8;
+    border: 1px solid #555;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  input[type=text] { width: 280px; }
+  input[type=number] { width: 90px; }
+  textarea { width: 100%; height: 80px; font-family: "Yu Gothic UI"; }
+  button {
+    background: #ffd700;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 4px;
+  }
+  button:hover { background: #ffed4e; }
+  button.danger { background: #ff6b6b; color: #fff; }
+  button.secondary { background: #555; color: #fff; }
+  .row {
+    background: #252525;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border-left: 4px solid #555;
+  }
+  .row.zone-buy { border-left-color: #1e90ff; }
+  .row.zone-sell { border-left-color: #ff4444; }
+  .row.zone-short { border-left-color: #ffa500; }
+  .row.zone-support { border-left-color: #3cb371; }
+  .row.line { border-left-color: #ff00ff; }
+  select {
+    background: #2a2a2a;
+    color: #e8e8e8;
+    border: 1px solid #555;
+    padding: 6px;
+    border-radius: 4px;
+  }
+  #output {
+    background: #0a0a0a;
+    color: #00ff88;
+    padding: 16px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    font-family: Consolas, monospace;
+    font-size: 13px;
+    border: 1px solid #333;
+  }
+  .small { font-size: 12px; color: #888; }
+  .copied { background: #00ff88 !important; color: #000 !important; }
+</style>
+</head>
+<body>
+
+<h1>🏆 GOLD Scenario Helper - 配信ツール</h1>
+<p class="small">入力 → 「テキスト生成」 → 「コピー」 → GitHubの zones.txt に貼り付けてコミット → メンバーのMT5に自動反映</p>
+
+<h2>📝 基本情報</h2>
+<div class="row">
+  <div><label>タイトル</label><input type="text" id="title" placeholder="例：週明け下窓スタート・4,650〜4,670で支えられるかを見る局面" style="width:600px"></div>
+  <div><label>更新時刻</label><input type="text" id="updated" readonly style="width:200px"></div>
+  <div><label>現在価格</label><input type="number" id="price" step="0.1" placeholder="例: 4683"></div>
+  <div><label>注意点</label><br><textarea id="note" placeholder="例：月曜朝の下窓に飛び乗らず、サポートの反応を確認してから判断"></textarea></div>
+</div>
+
+<h2>🎯 ゾーン（複数追加可）</h2>
+<div id="zones"></div>
+<button onclick="addZone('buy')">+ 押し目候補（青）</button>
+<button onclick="addZone('sell')">+ 戻り売り候補（赤）</button>
+<button onclick="addZone('short')">+ 短期反応（橙）</button>
+<button onclick="addZone('support')">+ サポート（緑）</button>
+
+<h2>❌ 否定ライン（複数追加可）</h2>
+<div id="lines"></div>
+<button onclick="addLine()">+ 否定ライン追加</button>
+
+<h2>📤 生成</h2>
+<button onclick="generate()" style="font-size:16px; padding:14px 28px;">テキスト生成</button>
+<button class="secondary" onclick="loadFromText()">既存テキストを読込</button>
+<button class="danger" onclick="clearAll()">全クリア</button>
+
+<h2>📋 出力</h2>
+<button onclick="copyOutput()" id="copyBtn">📋 クリップボードにコピー</button>
+<button class="secondary" onclick="downloadFile()">💾 zones.txt としてダウンロード</button>
+<p class="small">↓ この内容を GitHub の zones.txt に貼り付けてコミットしてください</p>
+<pre id="output">（ここに生成結果が出ます）</pre>
+
+<h2>📥 既存テキスト読み込み</h2>
+<p class="small">既存の zones.txt の内容を貼り付けて「既存テキストを読込」を押すと、編集できます</p>
+<textarea id="importArea" placeholder="既存の zones.txt を貼り付け..." style="height:160px"></textarea>
+
+<script>
+let zoneCounter = 0;
+let lineCounter = 0;
+
+const ZONE_PRESETS = {
+  buy:     { label: '本命押し目候補',  color: 'DodgerBlue',     cssClass: 'zone-buy' },
+  sell:    { label: '本命戻り売り候補', color: 'Red',            cssClass: 'zone-sell' },
+  short:   { label: '短期戻り売り候補', color: 'Orange',         cssClass: 'zone-short' },
+  support: { label: '深押しサポート',  color: 'MediumSeaGreen', cssClass: 'zone-support' }
+};
+
+const COLOR_OPTIONS = [
+  'DodgerBlue', 'Red', 'Orange', 'MediumSeaGreen', 'Magenta',
+  'Yellow', 'Gold', 'Aqua', 'White', 'Lime', 'HotPink', 'Silver'
+];
+
+function nowJST() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  const h = String(d.getHours()).padStart(2,'0');
+  const mi = String(d.getMinutes()).padStart(2,'0');
+  return `${y}-${m}-${day} ${h}:${mi}`;
+}
+
+function colorSelect(selected) {
+  return `<select>${COLOR_OPTIONS.map(c =>
+    `<option value="${c}" ${c===selected?'selected':''}>${c}</option>`).join('')}</select>`;
+}
+
+function addZone(type, data = {}) {
+  const preset = ZONE_PRESETS[type] || ZONE_PRESETS.buy;
+  const id = data.id || `z${++zoneCounter}`;
+  const div = document.createElement('div');
+  div.className = `row ${preset.cssClass}`;
+  div.innerHTML = `
+    <label>ID</label><input type="text" class="zid" value="${id}" style="width:100px">
+    <label>ラベル</label><input type="text" class="zlabel" value="${data.label||preset.label}" style="width:240px">
+    <label>下値</label><input type="number" class="zlow" step="0.1" value="${data.low||''}">
+    <label>上値</label><input type="number" class="zhigh" step="0.1" value="${data.high||''}">
+    <label>色</label>${colorSelect(data.color||preset.color)}
+    <button class="danger" onclick="this.parentElement.remove()">削除</button>
+  `;
+  // selectedをセット
+  const sel = div.querySelector('select');
+  sel.className = 'zcolor';
+  document.getElementById('zones').appendChild(div);
+}
+
+function addLine(data = {}) {
+  const id = data.id || `l${++lineCounter}`;
+  const div = document.createElement('div');
+  div.className = 'row line';
+  div.innerHTML = `
+    <label>ID</label><input type="text" class="lid" value="${id}" style="width:100px">
+    <label>ラベル</label><input type="text" class="llabel" value="${data.label||'否定ライン'}" style="width:240px">
+    <label>価格</label><input type="number" class="lprice" step="0.1" value="${data.price||''}">
+    <label>色</label>${colorSelect(data.color||'Magenta')}
+    <button class="danger" onclick="this.parentElement.remove()">削除</button>
+  `;
+  const sel = div.querySelector('select');
+  sel.className = 'lcolor';
+  document.getElementById('lines').appendChild(div);
+}
+
+function generate() {
+  document.getElementById('updated').value = nowJST();
+  const out = [];
+  out.push('# ============================================');
+  out.push('# GOLD Scenario Helper - 配信データ');
+  out.push('# Generated: ' + nowJST());
+  out.push('# ============================================');
+  out.push('');
+
+  const title = document.getElementById('title').value.trim();
+  const updated = document.getElementById('updated').value.trim();
+  const price = document.getElementById('price').value.trim();
+  const note = document.getElementById('note').value.trim();
+
+  if(title)   out.push(`TITLE|${title}`);
+  if(updated) out.push(`UPDATED|${updated}`);
+  if(price)   out.push(`PRICE|${price}`);
+  if(note)    out.push(`NOTE|${note}`);
+  out.push('');
+
+  document.querySelectorAll('#zones .row').forEach(r => {
+    const id = r.querySelector('.zid').value.trim();
+    const lbl = r.querySelector('.zlabel').value.trim();
+    const lo = r.querySelector('.zlow').value.trim();
+    const hi = r.querySelector('.zhigh').value.trim();
+    const col = r.querySelector('.zcolor').value;
+    if(id && lo && hi) out.push(`ZONE|${id}|${lbl}|${lo}|${hi}|${col}`);
+  });
+  out.push('');
+
+  document.querySelectorAll('#lines .row').forEach(r => {
+    const id = r.querySelector('.lid').value.trim();
+    const lbl = r.querySelector('.llabel').value.trim();
+    const pr = r.querySelector('.lprice').value.trim();
+    const col = r.querySelector('.lcolor').value;
+    if(id && pr) out.push(`LINE|${id}|${lbl}|${pr}|${col}`);
+  });
+
+  document.getElementById('output').textContent = out.join('\n');
+}
+
+function copyOutput() {
+  const text = document.getElementById('output').textContent;
+  if(!text || text.startsWith('（')) { alert('先に「テキスト生成」を押してください'); return; }
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    const orig = btn.textContent;
+    btn.textContent = '✅ コピーしました！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function downloadFile() {
+  const text = document.getElementById('output').textContent;
+  if(!text || text.startsWith('（')) { alert('先に「テキスト生成」を押してください'); return; }
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'zones.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function loadFromText() {
+  const text = document.getElementById('importArea').value;
+  if(!text.trim()) { alert('既存テキストを下のボックスに貼り付けてください'); return; }
+  clearAll();
+  text.split('\n').forEach(line => {
+    line = line.trim();
+    if(!line || line.startsWith('#')) return;
+    const parts = line.split('|');
+    const type = parts[0];
+    if(type === 'TITLE') document.getElementById('title').value = parts[1] || '';
+    else if(type === 'PRICE') document.getElementById('price').value = parts[1] || '';
+    else if(type === 'NOTE') document.getElementById('note').value = parts[1] || '';
+    else if(type === 'ZONE' && parts.length >= 6) {
+      addZone('buy', { id: parts[1], label: parts[2], low: parts[3], high: parts[4], color: parts[5] });
+    }
+    else if(type === 'LINE' && parts.length >= 5) {
+      addLine({ id: parts[1], label: parts[2], price: parts[3], color: parts[4] });
+    }
+  });
+  alert('読み込み完了。編集後「テキスト生成」を押してください');
+}
+
+function clearAll() {
+  document.getElementById('zones').innerHTML = '';
+  document.getElementById('lines').innerHTML = '';
+  document.getElementById('output').textContent = '（ここに生成結果が出ます）';
+  zoneCounter = 0; lineCounter = 0;
+}
+
+// 初期状態: サンプルを1つずつ
+window.onload = () => {
+  document.getElementById('updated').value = nowJST();
+  addZone('buy',     { id: 'main_buy',     label: '本命押し目候補',  low: 4650, high: 4670 });
+  addZone('short',   { id: 'short_resist', label: '短期戻り売り候補', low: 4695, high: 4705 });
+  addZone('sell',    { id: 'main_sell',    label: '上値重要ゾーン',   low: 4728, high: 4736 });
+  addLine({ id: 'deny_buy',  label: '買い目線否定', price: 4650 });
+  addLine({ id: 'deny_sell', label: '売り目線否定', price: 4736 });
+};
+</script>
+
+</body>
+</html>
