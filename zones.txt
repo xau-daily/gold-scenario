@@ -1,16 +1,22 @@
 # ============================================
 # GOLD Scenario Helper - 配信データ
-# Generated: 2026-05-28 11:00
+# Generated: 2026-05-28 17:32 (auto-extracted from scenario)
 # ============================================
 
-TITLE|木曜日シナリオ
-UPDATED|2026-05-28 11:00
-PRICE|4422
-NOTE|指標に注意
+TITLE|4,520〜4,530の再攻防・上抜けか下抜け後の反応を確認する日
+UPDATED|2026-05-28 17:32
+PRICE|4520
+NOTE|今、一番迷いやすいのは、
 
-ZONE|main_buy|本命押し目候補|4380|4395|DodgerBlue
-ZONE|short_resist|短期戻り売り候補|4420|4430|Orange
-ZONE|main_sell|上値重要ゾーン|4450|4465|Red
+ZONE|az1|短期戻り売り候補|4520|4530|Orange
+ZONE|az2|短期戻り売り候補|4580|4590|Orange
+ZONE|az3|短期戻り売り候補|4550|4560|Orange
+ZONE|az4|戻り売り候補|4467|4480|Red
+ZONE|az5|戻り売り候補|4430|4450|Red
+ZONE|az6|本命戻り売り候補|4600|4610|Red
+ZONE|az7|戻り売り候補|4488|4500|Red
+ZONE|az8|短期戻り売り候補|4530|4590|Orange
+ZONE|az9|戻り売り候補|4510|4520|Red
 
-LINE|deny_buy|買い目線否定|4370|Magenta
-LINE|deny_sell|売り目線否定|4475|Magenta
+LINE|al1|売り目線否定|4530|Magenta
+LINE|al2|売り目線否定|4520|Magenta
