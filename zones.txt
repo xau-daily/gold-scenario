@@ -10,7 +10,3 @@ NOTE|昨日のシナリオでは、4,500割れから下方向がしっかり進�
 
 ZONE|az3|戻り売り候補|4467|4480|Red
 ZONE|az4|戻り売り候補|4520|4530|Red
-
-LINE|al1|売り目線否定|4500|Magenta
-LINE|al2|買い目線否定|4380|Magenta
-LINE|al3|否定ライン|4430|Magenta
